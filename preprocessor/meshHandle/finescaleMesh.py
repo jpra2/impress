@@ -9,7 +9,10 @@ from pymoab import core, types, rng, topo_util
 from . corePymoab import CoreMoab
 from . meshComponents import MeshEntities, MoabVariable
 import yaml
-
+#######################
+##adicionado por jp
+from .data import Data
+############################
 print('Standard fine-scale mesh loaded: No multiscale components available')
 
 class FineScaleMesh:
@@ -110,6 +113,11 @@ class FineScaleMesh:
         return pseudo_cent
 
     def init_variables(self):
+        #############################
+        ## adicionado por jp
+        self.data = Data()
+        #############################
+
         config = self.read_config('variable_settings.yml')
 
         nodes = config['nodes']
@@ -126,30 +134,62 @@ class FineScaleMesh:
                 format = nodes[i]['data format']
                 command = 'self.' + i + ' = MoabVariable(self.core, data_size = ' + size + ', var_type = "nodes", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
                 exec(command)
+                ##################################
+                ##adicionado por jp
+                command2 = 'self.' + i
+                impress_variable = exec(command2)
+                name = i
+                entity = 'nodes'
+                self.data.get_data(name, impress_variable, size, format, entity)
+                #####################################
         if edges is not None:
             names = edges.keys()
             for i in names:
                 size = str(edges[i]['data size'])
                 format = edges[i]['data format']
                 command = 'self.' + i + ' = MoabVariable(self.core, data_size = ' + size + ', var_type = "edges", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
-                print(command)
+                # print(command)
                 exec(command)
+                ##################################
+                ##adicionado por jp
+                command2 = 'self.' + i
+                impress_variable = exec(command2)
+                name = i
+                entity = 'edges'
+                self.data.get_data(name, impress_variable, size, format, entity)
+                #####################################
         if faces is not None:
             names = faces.keys()
             for i in names:
                 size = str(faces[i]['data size'])
                 format = faces[i]['data format']
                 command = 'self.' + i + ' = MoabVariable(self.core, data_size = ' + size + ', var_type = "faces", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
-                print(command)
+                # print(command)
                 exec(command)
+                ##################################
+                ##adicionado por jp
+                command2 = 'self.' + i
+                impress_variable = exec(command2)
+                name = i
+                entity = 'faces'
+                self.data.get_data(name, impress_variable, size, format, entity)
+                #####################################
         if volumes is not None:
             names = volumes.keys()
             for i in names:
                 size = str(volumes[i]['data size'])
                 format = volumes[i]['data format']
                 command = 'self.' + i + ' = MoabVariable(self.core, data_size = ' + size + ', var_type = "volumes", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
-                print(command)
+                # print(command)
                 exec(command)
+                ##################################
+                ##adicionado por jp
+                command2 = 'self.' + i
+                impress_variable = exec(command2)
+                name = i
+                entity = 'volumes'
+                self.data.get_data(name, impress_variable, size, format, entity)
+                #####################################
 
     def get_volume(self,entity):
         #input: entity tag
