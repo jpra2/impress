@@ -6,6 +6,7 @@ Essa classe será utilizada para automatizar alguns processos.
 '''
 import numpy as np
 from .. import directories as direc
+import pickle
 
 class Data:
     '''
@@ -32,6 +33,7 @@ class Data:
         self.len_entities[direc.entities_lv0[3]] = n_volumes
         self.mesh = fine_scale_mesh_obj
         self.name_variables = direc.path_local_variables
+        self.name_info_data = direc.path_local_info_data
 
     def get_info_data(self, name, data_size, data_format, entity, level=0):
         '''
@@ -109,6 +111,19 @@ class Data:
         vols_viz_faces = self.mesh.faces.bridge_adjacencies(self.mesh.faces.all, 2, 3)
         self.elements_lv0[direc.entities_lv0_0[1]] = vols_viz_faces
 
+        vols_viz_internal_faces = np.zeros((len(internal_faces), 2), dtype=np.int32)
+        for i, f in enumerate(internal_faces):
+            vols_viz_internal_faces[i] = vols_viz_faces[f]
+        self.elements_lv0[direc.entities_lv0_0[2]] = vols_viz_internal_faces
+
+        boundary_faces = np.setdiff1d(self.mesh.faces.all, internal_faces)
+
+        vols_viz_boundary_faces = np.zeros((len(boundary_faces)), dtype=np.int32)
+        for i, f in enumerate(boundary_faces):
+            vols_viz_boundary_faces[i] = vols_viz_faces[f]
+
+        self.elements_lv0[direc.entities_lv0_0[3]] = vols_viz_boundary_faces
+
         self.centroids = dict()
         '''
         self.centroids = dicts para linkar o nome das entidades aos seus centroides
@@ -127,6 +142,7 @@ class Data:
         if names:
             for name in names:
                 command = 'self.mesh.' + name + '[:] = ' + 'self.variables["' + name + '"]'
+                exec(command)
 
         else:
             for name in self.variables.keys():
@@ -144,17 +160,17 @@ class Data:
                 command = 'self.variables["' + name + '"] = self.mesh.' + name + '[:]'
                 exec(command)
 
-    def export_to_npz(self, update=False):
-
-        if update:
-            self.update_to_mesh()
+    def export_to_npz(self):
 
         name_variables = self.name_variables
+        name_info_data = self.name_info_data
 
         np.savez(name_variables, **self.variables)
 
-    def load_from_npz(self, update=False):
+    def load_from_npz(self):
         name_variables = self.name_variables
+        name_info_data = self.name_info_data
+
         arq = np.load(name_variables)
 
         for name, variable in arq.items():
