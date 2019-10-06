@@ -63,6 +63,7 @@ class Data:
         '''
 
         variables = dict()
+        variables_impress = dict()
 
         for name, infos in self.info_data.items():
             n = infos[direc.names_datas[0]]
@@ -78,8 +79,10 @@ class Data:
                 data = np.repeat(data, n).reshape([n_entity, n])
 
             variables[name] = data
+            variables_impress[name] = name
 
         self.variables = variables
+        self.variables_impress = variables_impress
 
     def init_dicts(self):
         '''
@@ -111,16 +114,13 @@ class Data:
         vols_viz_faces = self.mesh.faces.bridge_adjacencies(self.mesh.faces.all, 2, 3)
         self.elements_lv0[direc.entities_lv0_0[1]] = vols_viz_faces
 
-        vols_viz_internal_faces = np.zeros((len(internal_faces), 2), dtype=np.int32)
-        for i, f in enumerate(internal_faces):
-            vols_viz_internal_faces[i] = vols_viz_faces[f]
+        vols_viz_internal_faces = self.mesh.faces.bridge_adjacencies(internal_faces, 2, 3)
         self.elements_lv0[direc.entities_lv0_0[2]] = vols_viz_internal_faces
 
         boundary_faces = np.setdiff1d(self.mesh.faces.all, internal_faces)
+        self.elements_lv0[direc.entities_lv0_0[4]] = boundary_faces
 
-        vols_viz_boundary_faces = np.zeros((len(boundary_faces)), dtype=np.int32)
-        for i, f in enumerate(boundary_faces):
-            vols_viz_boundary_faces[i] = vols_viz_faces[f]
+        vols_viz_boundary_faces = self.mesh.faces.bridge_adjacencies(boundary_faces, 2, 3).flatten()
 
         self.elements_lv0[direc.entities_lv0_0[3]] = vols_viz_boundary_faces
 
@@ -138,7 +138,7 @@ class Data:
         self.centroids[direc.entities_lv0[1]] = self.mesh.edges.center(self.mesh.edges.all)
         self.centroids[direc.entities_lv0[0]] = self.mesh.nodes.center(self.mesh.nodes.all)
 
-    def update_to_mesh(self, names=None):
+    def update_variables_to_mesh(self, names=None):
         if names:
             for name in names:
                 command = 'self.mesh.' + name + '[:] = ' + 'self.variables["' + name + '"]'
@@ -149,7 +149,7 @@ class Data:
                 command = 'self.mesh.' + name + '[:] = ' + 'self.variables["' + name + '"]'
                 exec(command)
 
-    def load_from_mesh(self, names=None):
+    def load_variables_from_mesh(self, names=None):
         if names:
             for name in names:
                 command = 'self.variables["' + name + '"] = self.mesh.' + name + '[:]'
@@ -160,14 +160,14 @@ class Data:
                 command = 'self.variables["' + name + '"] = self.mesh.' + name + '[:]'
                 exec(command)
 
-    def export_to_npz(self):
+    def export_variables_to_npz(self):
 
         name_variables = self.name_variables
         name_info_data = self.name_info_data
 
         np.savez(name_variables, **self.variables)
 
-    def load_from_npz(self):
+    def load_variables_from_npz(self):
         name_variables = self.name_variables
         name_info_data = self.name_info_data
 

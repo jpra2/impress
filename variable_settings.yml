@@ -55,6 +55,10 @@ faces:
     data size: 1
     data format: 'float'
     level: 0
+  pretransmissibility:
+    data size: 1
+    data format: 'float'
+    level: 0
 
 volumes:
   permeability:

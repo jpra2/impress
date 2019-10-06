@@ -266,6 +266,15 @@ class CoreMoab:
         return range_merged
 
     def print(self, text=None, extension=".h5m", config_input="print_settings.yml"):
+        ##################################
+        ## adicionado por jp
+        import os
+        path_ant = os.getcwd()
+        meshHandle_dir = os.path.dirname(os.path.abspath(__file__))
+        preprocessor_dir = os.path.dirname(meshHandle_dir)
+        impress_dir = os.path.dirname(preprocessor_dir)
+        os.chdir(impress_dir)
+        ##################################
         with open("print_settings.yml", 'r') as f:
             data = yaml.safe_load(f)
         nodes = data['nodes']
@@ -299,3 +308,8 @@ class CoreMoab:
             self.mb.write_file(text4, [m4])
         if all_entities != 0:
             self.mb.write_file(text5)
+
+        ##################################
+        ## adicionado por jp
+        os.chdir(path_ant)
+        ##################################

@@ -108,3 +108,12 @@ venv.bak/
 
 # Cython Files
 *.pyc
+
+###################
+## adicionado por jp
+*edges.h5m
+*face.h5m
+*nodes.h5m
+*volume.h5m
+*all.h5m
+######################
