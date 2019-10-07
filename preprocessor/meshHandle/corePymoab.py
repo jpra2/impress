@@ -11,6 +11,11 @@ import yaml
 class CoreMoab:
     def __init__(self, mesh_file, dim=3):
         self.dimension = dim
+        # ###################################
+        # ## jp debug
+        # import os
+        # import pdb; pdb.set_trace()
+        # ##############################
         self.mb = core.Core()
         self.root_set = self.mb.get_root_set()
         self.father_root_set = self.root_set
@@ -275,8 +280,15 @@ class CoreMoab:
         impress_dir = os.path.dirname(preprocessor_dir)
         os.chdir(impress_dir)
         ##################################
+
         with open("print_settings.yml", 'r') as f:
             data = yaml.safe_load(f)
+
+        ##################################
+        ## adicionado por jp
+        os.chdir(path_ant)
+        ##################################
+
         nodes = data['nodes']
         edges = data['edges']
         faces = data['faces']
@@ -308,8 +320,3 @@ class CoreMoab:
             self.mb.write_file(text4, [m4])
         if all_entities != 0:
             self.mb.write_file(text5)
-
-        ##################################
-        ## adicionado por jp
-        os.chdir(path_ant)
-        ##################################

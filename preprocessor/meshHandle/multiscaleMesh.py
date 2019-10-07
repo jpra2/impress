@@ -163,8 +163,21 @@ class FineScaleMeshMS(FineScaleMesh):
         return partition
 
     def read_config(self, config_input):
+        #######################
+        ## adicionado por jp
+        import os
+        from .. import directories as direc
+        path_ant = os.getcwd()
+        os.chdir(direc.impress_path)
+        #########################
         with open(config_input, 'r') as f:
             config_file = yaml.safe_load(f)
+
+        #########################
+        ## adicionado por jp
+        os.chdir(direc.impress_path)
+        #########################
+
         return config_file
 
 

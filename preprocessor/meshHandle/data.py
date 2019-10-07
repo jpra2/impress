@@ -150,6 +150,7 @@ class Data:
                 exec(command)
 
     def load_variables_from_mesh(self, names=None):
+        import pdb; pdb.set_trace()
         if names:
             for name in names:
                 command = 'self.variables["' + name + '"] = self.mesh.' + name + '[:]'
@@ -160,18 +161,46 @@ class Data:
                 command = 'self.variables["' + name + '"] = self.mesh.' + name + '[:]'
                 exec(command)
 
-    def export_variables_to_npz(self):
+    def export_variables_to_npz(self, file_name=None):
 
         name_variables = self.name_variables
         name_info_data = self.name_info_data
 
-        np.savez(name_variables, **self.variables)
+        if file_name:
+            np.savez(file_name, **self.variables)
+        else:
+            np.savez(name_variables, **self.variables)
 
-    def load_variables_from_npz(self):
+        # with open(self.name_info_data, 'rb') as f:
+        #     pickle.dump
+
+    def load_variables_from_npz(self, file_name=None):
         name_variables = self.name_variables
         name_info_data = self.name_info_data
 
-        arq = np.load(name_variables)
+        import os
+
+        import pdb; pdb.set_trace()
+
+
+        if file_name:
+            arq = np.load(file_name)
+        else:
+            arq = np.load(name_variables)
 
         for name, variable in arq.items():
             self.variables[name] = variable
+
+    def save_info_data(self):
+
+        name_info_data = self.name_info_data
+
+        with open(name_info_data, 'wb') as f:
+            pickle.dump(self.info_data, f)
+
+    def load_info_data(self):
+
+        name_info_data = self.name_info_data
+
+        with open(name_info_data, 'rb') as f:
+            self.info_data = pickle.loads(f.read())
