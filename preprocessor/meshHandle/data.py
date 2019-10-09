@@ -26,6 +26,7 @@ class Data:
         self.variables = dict()
         self.info_data = dict()
         self.len_entities = dict()
+        self.variables_impress = dict()
 
         self.len_entities[direc.entities_lv0[0]] = n_nodes
         self.len_entities[direc.entities_lv0[1]] = n_faces
@@ -179,6 +180,7 @@ class Data:
         name_info_data = self.name_info_data
 
         import os
+        import directories as direc
 
         import pdb; pdb.set_trace()
 
@@ -190,6 +192,10 @@ class Data:
 
         for name, variable in arq.items():
             self.variables[name] = variable
+            self.variables_impress[name] = name
+
+        for key, value in direc.variables_impress.items():
+            self.variables_impress[key] = value
 
     def save_info_data(self):
 

@@ -175,7 +175,7 @@ class FineScaleMeshMS(FineScaleMesh):
 
         #########################
         ## adicionado por jp
-        os.chdir(direc.impress_path)
+        os.chdir(path_ant)
         #########################
 
         return config_file

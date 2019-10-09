@@ -81,6 +81,10 @@ volumes:
     data size: 1
     data format: 'float'
     level: 0
+  volume:
+    data size: 1
+    data format: 'float'
+    level: 0
 
   tangent:
     data size: 3
