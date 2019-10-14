@@ -23,6 +23,7 @@ from numba import jit
 #ex int(nx)
 
 def scheme1(centerCoord, num_of_vol, rx,ry,rz ,nx = 3, ny = 3, nz =3, *argv, **kwargs):
+
     #input : centerCoord - > array with the center of elements
     #        num_of_vol = number of volumes
 
@@ -30,7 +31,7 @@ def scheme1(centerCoord, num_of_vol, rx,ry,rz ,nx = 3, ny = 3, nz =3, *argv, **k
     #        nx, ny, nz
     # msh -> objeto da clase meshUtil
     #centerCoord = msh.readData("CENTER")
-    import pdb; pdb.set_trace()
+
     nx = int(nx)
     ny = int(ny)
     nz = int(nz)
@@ -129,20 +130,19 @@ def scheme3(centerCoord, num_of_vol, rx,ry,rz ,nx = 3, ny = 3, nz =3 ):
 def scheme4(centerCoord, num_of_vol, rx,ry,rz ,nx = 3, ny = 3, nz =3, *argv, **kwargs):
     name_coord_nodes = 'coord_nodes'
     coord_nodes = kwargs.get(name_coord_nodes, None)
+    centerCoordTuple = [tuple(x) for x in centerCoord]
+    map_center_coord = dict(zip(centerCoordTuple, range(len(centerCoord))))
+
     if coord_nodes is None:
         raise ValueError(f'\n a chave {name_coord_nodes} deve conter as coordenadas dos nós \n')
 
-    boxes, cent_boxes = get_boxes(nx, ny, nz, rx, ry, rz)
-    boxes_points, cent_boxes = get_boxes_points(coord_nodes, boxes)
-
+    boxes_points, cent_boxes = get_boxes(nx, ny, nz, rx, ry, rz)
+    boxes_points, cent_boxes = get_boxes_points(coord_nodes, boxes_points)
     fine_elements_in_boxes = get_fine_elements_in_boxes(boxes_points, centerCoord)
-    fine_elements_in_boxes = test_fine_elements(fine_elements_in_boxes, centerCoord, boxes, cent_boxes)
+    # fine_elements_in_boxes, cent_boxes = test_fine_elements(fine_elements_in_boxes, centerCoord, boxes_points, cent_boxes)
+    fineTag = get_fineTag(fine_elements_in_boxes, map_center_coord, centerCoord, cent_boxes)
 
-
-    import pdb; pdb.set_trace()
-
-
-    pass
+    return fineTag, cent_boxes
 ###########################
 
 
@@ -170,6 +170,7 @@ def tagAdjust(tag, coarseCenter):
         if elo != eln:
             pointer = (tag == elo)
             fineTag[pointer] = eln
+
     return fineTag.astype(int) , np.delete(coarseCenter, [*elementsMissing], axis = 0)
 
 ####################
@@ -203,7 +204,18 @@ def get_boxes(nx, ny, nz, rx, ry, rz):
     points = np.array(points)
 
     boxes = []
-    cent_boxes = []
+    # cent_boxes = []
+
+    # n2 = len(points[2])-1
+    # n1 = len(points[1])-1
+    # n0 = len(points[0])-1
+    # ps0 = points[0]
+    # ps1 = points[1]
+    # ps2 = points[2]
+
+    # boxes = np.array([np.array([np.array([ps0[i], ps1[j], ps2[k]]), np.array([ps0[i+1], ps1[j+1], ps2[k+1]])]) for k in range(n2) for j in range(n1) for i in range(n0)])
+    # boxes3 = [np.array([ps0[i+1], ps1[j+1], ps2[k+1]]) for k in range(n2) for j in range(n1) for i in range(n0)]
+
 
     for k in range(len(points[2]) - 1):
         for j in range(len(points[1]) - 1):
@@ -211,15 +223,16 @@ def get_boxes(nx, ny, nz, rx, ry, rz):
                 p1 = np.array([points[0][i], points[1][j], points[2][k]])
                 p2 = np.array([points[0][i+1], points[1][j+1], points[2][k+1]])
                 boxes.append(np.array([p1, p2]))
-                cent_boxes.append(np.array([(p1[0]+p2[0])/2, (p1[1]+p2[1])/2, (p1[2]+p2[2])/2]))
+                # cent_boxes.append(np.mean(np.array([p1, p2]), axis=0))
 
     boxes = np.array(boxes)
-    cent_boxes = np.array(cent_boxes)
+    cent_boxes = np.mean(boxes, axis=1)
     return boxes, cent_boxes
 
 def get_boxes_points(coord_nodes, boxes):
 
-    coord2 = coord_nodes.copy()
+    coord2 = coord_nodes
+    ids = np.arange(len(coord2))
 
     boxes_points = np.zeros(boxes.shape)
     cent_boxes = []
@@ -228,36 +241,37 @@ def get_boxes_points(coord_nodes, boxes):
         p0 = box[0]
         p1 = box[1]
 
-        pp0 = get_prox(coord2, p0)
-        pp1 = get_prox(coord2, p1)
+        pp0 = get_prox(coord2, p0, ids)
+        pp1 = get_prox(coord2, p1, ids)
 
         boxes_points[i][0] = pp0
         boxes_points[i][1] = pp1
 
-        cent_boxes.append(np.array([pp0[0]+pp1[0]/2, pp0[0]+pp1[0]/2, pp0[0]+pp1[0]/2]))
+        cent_boxes.append(np.mean(boxes_points[i], axis=0))
 
     cent_boxes = np.array(cent_boxes)
     return boxes_points, cent_boxes
 
-def get_prox(coord2, p):
+def get_prox(coord2, p, ids):
     tt = coord2 - p
     n = np.linalg.norm(tt, axis=1)
     minn = n.min()
-    ind = np.where(n == minn)[0][0]
+    ind = ids[n == minn][0]
     pp = coord2[ind]
     return pp
 
 def get_fine_elements_in_boxes(boxes_points, centerCoord):
 
     fine_elements_in_boxes = []
+    ids = np.arange(len(centerCoord))
 
     for box in boxes_points:
-        indices = get_box(centerCoord, box)
+        indices = get_box(centerCoord, box, ids)
         fine_elements_in_boxes.append(centerCoord[indices])
 
     return np.array(fine_elements_in_boxes)
 
-def get_box(all_centroids, limites):
+def get_box_dep(all_centroids, limites):
 
     '''
     all_centroids->coordenadas dos centroides do conjunto
@@ -276,6 +290,20 @@ def get_box(all_centroids, limites):
     inds_vols = list(c1 & c2)
     return inds_vols
 
+def get_box(all_centroids, limites, ids):
+
+    '''
+    all_centroids->coordenadas dos centroides do conjunto
+    limites-> diagonal que define os volumes objetivo (numpy array com duas coordenadas)
+    Retorna os indices cujo centroide está dentro de limites
+    '''
+
+    inds_vols = ids[
+            (all_centroids[:,0] > limites[0,0]) & (all_centroids[:,1] > limites[0,1]) & \
+            (all_centroids[:,2] > limites[0,2]) & (all_centroids[:,0] < limites[1,0]) & \
+            (all_centroids[:,1] < limites[1,1]) & (all_centroids[:,2] < limites[1,2])]
+    return inds_vols
+
 def test_fine_elements(fine_elements_in_boxes, centerCoord, boxes, center_boxes):
 
     centers2 = centerCoord.copy()
@@ -290,11 +318,19 @@ def test_fine_elements(fine_elements_in_boxes, centerCoord, boxes, center_boxes)
             indice = np.where(diff == minn)[0][0]
             dd = list(fine_elements_in_boxes[indice])
             dd.append(p)
-            fine_elements_in_boxes[indice] = dd
+            fine_elements_in_boxes[indice] = np.array(dd)
+            center = np.mean(fine_elements_in_boxes[indice], axis=0)
+            center_boxes[indice] = center
 
-    return fine_elements_in_boxes
+    return fine_elements_in_boxes, center_boxes
 
+def get_fineTag(fine_elements_in_boxes, map_center_coord, centerCoord, center_boxes):
 
+    fineTag = np.zeros(len(centerCoord), dtype=np.int32)
+    for i, elements in enumerate(fine_elements_in_boxes):
+        els = [tuple(x) for x in elements]
+        indices = np.array([map_center_coord[k] for k in els])
+        fineTag[indices] = np.repeat(i, len(indices))
 
-
+    return fineTag
 ####################

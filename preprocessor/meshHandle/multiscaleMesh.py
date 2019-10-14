@@ -143,8 +143,13 @@ class FineScaleMeshMS(FineScaleMesh):
                 ## adicionado por jp
                 kwargs = {'coord_nodes': self.nodes.center[:]}
                 ####################
+                import time
+                t0 = time.time()
                 [partition[:],coarse_center]  = getattr(algoritmo, name_function)(self.volumes.center[:],
                            len(self), self.rx, self.ry, self.rz,*used_attributes, **kwargs)
+                t2 = time.time()
+                print(f'tempo: {t2 - t0}')
+                import pdb; pdb.set_trace()
             elif self.dim == 2:
                 partition = MoabVariable(self.core,data_size=1,var_type= "faces",  data_format="int", name_tag="Partition",
                                              data_density="sparse")
