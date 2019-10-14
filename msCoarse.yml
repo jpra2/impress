@@ -5,7 +5,8 @@
 #  1 -> Particionamento Geométrico Simples com Base Cubos
 #  2 -> Particionamento Geométrico Simples com Tetraedros
 #  3 -> Particionamento Geométrico
-Partitioner Scheme: '1'
+# Partitioner Scheme: '1'
+Partitioner Scheme: '4'
 
 # Coarsening ratio in directions x, y e z
 Coarsening:

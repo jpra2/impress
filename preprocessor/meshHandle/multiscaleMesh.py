@@ -139,8 +139,12 @@ class FineScaleMeshMS(FineScaleMesh):
                 used_attributes.append(specific_attributes[0]["nx"])
                 used_attributes.append(specific_attributes[1]["ny"])
                 used_attributes.append(specific_attributes[2]["nz"])
+                ####################
+                ## adicionado por jp
+                kwargs = {'coord_nodes': self.nodes.center[:]}
+                ####################
                 [partition[:],coarse_center]  = getattr(algoritmo, name_function)(self.volumes.center[:],
-                           len(self), self.rx, self.ry, self.rz,*used_attributes)
+                           len(self), self.rx, self.ry, self.rz,*used_attributes, **kwargs)
             elif self.dim == 2:
                 partition = MoabVariable(self.core,data_size=1,var_type= "faces",  data_format="int", name_tag="Partition",
                                              data_density="sparse")
