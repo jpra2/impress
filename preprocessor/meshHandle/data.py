@@ -182,9 +182,6 @@ class Data:
         import os
         import directories as direc
 
-        import pdb; pdb.set_trace()
-
-
         if file_name:
             arq = np.load(file_name)
         else:
