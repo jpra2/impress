@@ -94,3 +94,7 @@ volumes:
     data size: 3
     data format: 'float'
     level: 0
+  hs:
+    data size: 3
+    data format: 'float'
+    level: 0
