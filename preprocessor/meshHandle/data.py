@@ -125,6 +125,11 @@ class Data:
 
         self.elements_lv0[direc.entities_lv0_0[3]] = vols_viz_boundary_faces
 
+        self.elements_lv0[direc.entities_lv0[0]] = self.mesh.nodes.all
+        self.elements_lv0[direc.entities_lv0[1]] = self.mesh.edges.all
+        self.elements_lv0[direc.entities_lv0[2]] = self.mesh.faces.all
+        self.elements_lv0[direc.entities_lv0[3]] = self.mesh.volumes.all
+
         self.centroids = dict()
         '''
         self.centroids = dicts para linkar o nome das entidades aos seus centroides
