@@ -59,6 +59,21 @@ faces:
     data size: 1
     data format: 'float'
     level: 0
+  velocity_faces:
+    data size: 1
+    data format: 'float'
+    level: 0
+  flux_grav_faces:
+    data size: 1
+    data format: 'float'
+    level: 0
+  flux_faces:
+      data size: 1
+      data format: 'float'
+      level: 0
+
+
+
 
 volumes:
   permeability:
@@ -82,6 +97,18 @@ volumes:
     data format: 'float'
     level: 0
   volume:
+    data size: 1
+    data format: 'float'
+    level: 0
+  pressure:
+    data size: 1
+    data format: 'float'
+    level: 0
+  flux_volumes:
+    data size: 1
+    data format: 'float'
+    level: 0
+  flux_grav_volumes:
     data size: 1
     data format: 'float'
     level: 0
