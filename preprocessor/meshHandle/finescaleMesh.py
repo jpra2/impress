@@ -132,6 +132,7 @@ class FineScaleMesh:
             for i in names:
                 size = str(nodes[i]['data size'])
                 format = nodes[i]['data format']
+                pdb.set_trace()
                 command = 'self.' + i + ' = MoabVariable(self.core, data_size = ' + size + ', var_type = "nodes", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
                 exec(command)
                 ##################################

@@ -281,7 +281,7 @@ class CoreMoab:
         os.chdir(impress_dir)
         ##################################
 
-        with open("print_settings.yml", 'r') as f:
+        with open(config_input, 'r') as f:
             data = yaml.safe_load(f)
 
         ##################################

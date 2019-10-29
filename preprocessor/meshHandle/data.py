@@ -7,6 +7,7 @@ Essa classe será utilizada para automatizar alguns processos.
 import numpy as np
 from .. import directories as direc
 import pickle
+import pdb
 
 class Data:
     '''
@@ -145,6 +146,7 @@ class Data:
         self.centroids[direc.entities_lv0[0]] = self.mesh.nodes.center(self.mesh.nodes.all)
 
     def update_variables_to_mesh(self, names=None):
+
         if names:
             for name in names:
                 command = 'self.mesh.' + name + '[:] = ' + 'self.variables["' + name + '"]'
@@ -156,7 +158,7 @@ class Data:
                 exec(command)
 
     def load_variables_from_mesh(self, names=None):
-        import pdb; pdb.set_trace()
+
         if names:
             for name in names:
                 command = 'self.variables["' + name + '"] = self.mesh.' + name + '[:]'
@@ -184,8 +186,7 @@ class Data:
         name_variables = self.name_variables
         name_info_data = self.name_info_data
 
-        import os
-        import directories as direc
+        from packs import directories as direc
 
         if file_name:
             arq = np.load(file_name)
