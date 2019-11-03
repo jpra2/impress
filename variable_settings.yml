@@ -71,7 +71,15 @@ faces:
     data size: 1
     data format: 'float'
     level: 0
+  flux_w_faces:
+    data size: 1
+    data format: 'float'
+    level: 0
   fw_face:
+    data size: 1
+    data format: 'float'
+    level: 0
+  lambda_t_face:
     data size: 1
     data format: 'float'
     level: 0
@@ -122,8 +130,21 @@ volumes:
     level: 0
   fw_vol:
     data size: 1
-      data format: 'float'
-      level: 0
+    data format: 'float'
+    level: 0
+  lambda_w:
+    data size: 1
+    data format: 'float'
+    level: 0
+  lambda_o:
+    data size: 1
+    data format: 'float'
+    level: 0
+  lambda_t:
+    data size: 1
+    data format: 'float'
+    level: 0
+
 
 
   tangent:
