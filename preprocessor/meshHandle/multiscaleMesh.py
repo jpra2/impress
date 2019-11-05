@@ -11,11 +11,6 @@ from . meshComponentsMS import MoabVariableMS,  MeshEntitiesMS
 from pymoab import core, types, rng
 import numpy as np
 import yaml
-#######################
-##adicionado por jp
-from .data import Data
-from .. import directories as direc
-############################
 
 
 print('Initializing Finescale Mesh for Multiscale Methods')
@@ -43,16 +38,16 @@ class FineScaleMeshMS(FineScaleMesh):
 
     def init_variables(self):
 
-        #############################
-        ## adicionado por jp
-        n_nodes = len(self.nodes)
-        n_faces = len(self.faces)
-        n_edges = len(self.edges)
-        n_volumes = len(self.volumes)
-
-        self.data = Data(n_nodes, n_faces, n_edges, n_volumes, self)
-        verif_format = ['float', 'int']
-        #############################
+        # #############################
+        # ## adicionado por jp
+        # n_nodes = len(self.nodes)
+        # n_faces = len(self.faces)
+        # n_edges = len(self.edges)
+        # n_volumes = len(self.volumes)
+        #
+        # self.data = Data(n_nodes, n_faces, n_edges, n_volumes, self)
+        # verif_format = ['float', 'int']
+        # #############################
 
         config = self.read_config('variable_settings.yml')
 
@@ -70,13 +65,6 @@ class FineScaleMeshMS(FineScaleMesh):
                 format = nodes[i]['data format']
                 command = 'self.' + i + ' = MoabVariableMS(self.core, data_size = ' + size + ', var_type = "nodes", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
                 exec(command)
-                ##################################
-                ##adicionado por jp
-                name = i
-                entity = direc.entities_lv0[0]
-                if format in verif_format:
-                    self.data.get_info_data(name, size, format, entity)
-                #####################################
 
         if edges is not None:
             names = edges.keys()
@@ -86,13 +74,6 @@ class FineScaleMeshMS(FineScaleMesh):
                 command = 'self.' + i + ' = MoabVariableMS(self.core, data_size = ' + size + ', var_type = "edges", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
                 print(command)
                 exec(command)
-                ##################################
-                ##adicionado por jp
-                name = i
-                entity = direc.entities_lv0[1]
-                if format in verif_format:
-                    self.data.get_info_data(name, size, format, entity)
-                #####################################
 
         if faces is not None:
             names = faces.keys()
@@ -102,13 +83,6 @@ class FineScaleMeshMS(FineScaleMesh):
                 command = 'self.' + i + ' = MoabVariableMS(self.core, data_size = ' + size + ', var_type = "faces", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
                 print(command)
                 exec(command)
-                ##################################
-                ##adicionado por jp
-                name = i
-                entity = direc.entities_lv0[2]
-                if format in verif_format:
-                    self.data.get_info_data(name, size, format, entity)
-                #####################################
 
         if volumes is not None:
             names = volumes.keys()
@@ -118,13 +92,6 @@ class FineScaleMeshMS(FineScaleMesh):
                 command = 'self.' + i + ' = MoabVariableMS(self.core, data_size = ' + size + ', var_type = "volumes", data_format = ' + "'" + format + "'" + ', name_tag =' + "'" + i + "'" + ')'
                 print(command)
                 exec(command)
-                ##################################
-                ##adicionado por jp
-                name = i
-                entity = direc.entities_lv0[3]
-                if format in verif_format:
-                    self.data.get_info_data(name, size, format, entity)
-                #####################################
 
     def init_partition(self):
         config = self.read_config('msCoarse.yml')
@@ -167,20 +134,9 @@ class FineScaleMeshMS(FineScaleMesh):
         return partition
 
     def read_config(self, config_input):
-        #######################
-        ## adicionado por jp
-        import os
-        from .. import directories as direc
-        path_ant = os.getcwd()
-        os.chdir(direc.impress_path)
-        #########################
+
         with open(config_input, 'r') as f:
             config_file = yaml.safe_load(f)
-
-        #########################
-        ## adicionado por jp
-        os.chdir(path_ant)
-        #########################
 
         return config_file
 
